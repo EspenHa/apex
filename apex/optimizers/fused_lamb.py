@@ -118,6 +118,10 @@ class FusedLAMB(torch.optim.Optimizer):
                     raise RuntimeError('FusedLAMB only support fp16 and fp32.')
 
         device = self.param_groups[0]["params"][0].device
+
+        if self._dummy_overflow_buf.device != device:
+            self._dummy_overflow_buf = self._dummy_overflow_buf.to(device)
+
         g_norm_32, g_norm_16 = torch.zeros(1, device=device), torch.zeros(1, device=device)
         # compute grad norm for two lists
         if len(g_all_32) > 0:
